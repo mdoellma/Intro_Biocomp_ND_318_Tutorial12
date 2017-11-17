@@ -1,0 +1,33 @@
+#Helpful code
+#var1 = re.compile(regexstring)
+#list1 = [list of strings to search]
+#filter(var1.match,list1) - re.match finds only the first instance near the beginning of the string
+
+#import packages
+import numpy
+import pandas
+import scipy
+import scipy.integrate as spint
+from scipy.stats import norm
+from scipy.optimize import minimize
+from scipy.stats import chi2
+from plotnine import *
+
+#load data
+chickwts = pandas.read_csv("chickwts.txt",header=0,sep=",")
+
+#Part 2 - generate a plot that summarizes all of the data in 'chickwts.txt'
+ggplot(chickwts,aes(x='feed',y='weight'))+geom_bar(stat="summary",fun_y=numpy.mean)+theme_classic()
+
+#Part 3 - null and alternative hypothesis for difference in chick weight
+#Pull out information interested in
+Soybean=chickwts.iloc[chickwts.feed.isin('soybean'),:]
+Sunflower=chickwts.iloc[chickwts.feed.isin('sunflower'),:]
+
+#Make a dataframe
+#var2=pandas.DataFrame({'y':var1.col2name, 'x':})
+#Designate 'treatment' group as x=1
+#var2.loc[var1.col1name=='name of treatment group', 'x']=1
+SoybeanFrame=pandas.DataFrame({'y':soybean.feed,'x':0})
+SunflowerFrame=pandas.DataFrame({'y':sunflower.feed,'x':0})
+
