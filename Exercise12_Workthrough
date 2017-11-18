@@ -21,13 +21,31 @@ ggplot(chickwts,aes(x='feed',y='weight'))+geom_bar(stat="summary",fun_y=numpy.me
 
 #Part 3 - null and alternative hypothesis for difference in chick weight
 #Pull out information interested in
-Soybean=chickwts.iloc[chickwts.feed.isin('soybean'),:]
-Sunflower=chickwts.iloc[chickwts.feed.isin('sunflower'),:]
+Soybean=chickwts.loc[chickwts.feed.isin(['soybean']),:]
+Sunflower=chickwts.loc[chickwts.feed.isin(['sunflower']),:]
 
 #Make a dataframe
 #var2=pandas.DataFrame({'y':var1.col2name, 'x':})
 #Designate 'treatment' group as x=1
 #var2.loc[var1.col1name=='name of treatment group', 'x']=1
-SoybeanFrame=pandas.DataFrame({'y':soybean.feed,'x':0})
-SunflowerFrame=pandas.DataFrame({'y':sunflower.feed,'x':0})
+SoybeanFrame=pandas.DataFrame({'y':Soybean.feed,'x':0})
+SoybeanFrame.loc[Soybean.feed=='soybean','x']=1
+SunflowerFrame=pandas.DataFrame({'y':Sunflower.feed,'x':0})
+SunflowerFrame.loc[Sunflower.feed=='sunflower','x']=1
 
+#Null model
+def nllike_null(p_null,obs_null):
+    B0_null=p_null[0]
+    sigma_null=p_null[1]
+    expected_null=B0_null
+    nll_null=-1*norm(expected_null,sigma_null).logpdf(obs_null.y).sum()
+    return nll_null
+    
+#Alternative model (calling it treatment)
+def nllike_treat(p_treat,obs_treat):
+    B0_treat=p_treat[0]
+    B1_treat=p_treat[1]
+    sigma_treat=p_treat[2]
+    expected_treat=B0_treat+B1_treat*obs_treat.x
+    nll_treat=-1*norm(expected_treat,sigma_treat).logpdf(obs_treat.y).sum()
+    return nll_treat 
