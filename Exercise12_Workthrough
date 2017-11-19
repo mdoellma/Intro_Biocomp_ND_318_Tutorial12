@@ -29,9 +29,7 @@ Sunflower=chickwts.loc[chickwts.feed.isin(['sunflower']),:]
 #Designate 'treatment' group as x=1
 #var2.loc[var1.col1name=='name of treatment group', 'x']=1
 SoybeanFrame=pandas.DataFrame({'y':Soybean.feed,'x':0})
-SoybeanFrame.loc[Soybean.feed=='soybean','x']=1
 SunflowerFrame=pandas.DataFrame({'y':Sunflower.feed,'x':0})
-SunflowerFrame.loc[Sunflower.feed=='sunflower','x']=1
 
 #Null model
 def nllike_null(p_null,obs_null):
