@@ -52,12 +52,12 @@ def nllike_treat(p_treat,obs_treat):
 #Estimate parameters for Soybean feed 
 #Null model for Soybean feed
 initialGuess_null=numpy.array([1,1])
-fit_null_SubsetFrame=minimize(nllike_null,initialGuess_null,method="Nelder-Mead",options={'disp':True},args=SubsetFrame) #GETTING ERROR HERE
+fit_null_SubsetFrame=minimize(nllike_null,initialGuess_null,method="Nelder-Mead",options={'disp':True},args=SubsetFrame)
 print("estimated parameters for null model of Soybean feed")
 print(fit_null_SubsetFrame.x)
 print("negative log likelihood for null model")
 nll_null_SubsetFrame=fit_null_SubsetFrame.fun
-print(nll_null_SubsetFrame) #prints negative log likelihood value for null model of Soybean feed 
+print(nll_null_SubsetFrame) #prints negative log likelihood value for null model
 #Treatment Model 
 initialGuess_treat=numpy.array([1,1,1])
 fit_treat_SubsetFrame=minimize(nllike_treat,initialGuess_treat,method="Nelder-Mead",options={'disp':True},args=SubsetFrame) #for first mutation
