@@ -21,15 +21,14 @@ ggplot(chickwts,aes(x='feed',y='weight'))+geom_bar(stat="summary",fun_y=numpy.me
 
 #Part 3 - null and alternative hypothesis for difference in chick weight
 #Pull out information interested in
-Soybean=chickwts.loc[chickwts.feed.isin(['soybean']),:]
-Sunflower=chickwts.loc[chickwts.feed.isin(['sunflower']),:]
+Subset=chickwts.loc[chickwts.feed.isin(['soybean', 'sunflower']),:]
 
 #Make a dataframe
 #var2=pandas.DataFrame({'y':var1.col2name, 'x':})
 #Designate 'treatment' group as x=1
 #var2.loc[var1.col1name=='name of treatment group', 'x']=1
-SoybeanFrame=pandas.DataFrame({'y':Soybean.feed,'x':0})
-SunflowerFrame=pandas.DataFrame({'y':Sunflower.feed,'x':0})
+SubsetFrame=pandas.DataFrame({'y':Subset.weight,'x':0})
+SubsetFrame.loc[Subset.feed=='sunflower','x']=1
 
 #Null model
 def nllike_null(p_null,obs_null):
@@ -53,50 +52,25 @@ def nllike_treat(p_treat,obs_treat):
 #Estimate parameters for Soybean feed 
 #Null model for Soybean feed
 initialGuess_null=numpy.array([1,1])
-fit_null_Soybean=minimize(nllike_null,initialGuess_null,method="Nelder-Mead",options={'disp':True},args=SoybeanFrame) #GETTING ERROR HERE
+fit_null_SubsetFrame=minimize(nllike_null,initialGuess_null,method="Nelder-Mead",options={'disp':True},args=SubsetFrame) #GETTING ERROR HERE
 print("estimated parameters for null model of Soybean feed")
-print(fit_null_Soybean.x)
-print("negative log likelihood for null model of Soybean feed")
-nll_null_Soybean=fit_null_Soybean.fun
-print(nll_null_Soybean) #prints negative log likelihood value for null model of Soybean feed 
+print(fit_null_SubsetFrame.x)
+print("negative log likelihood for null model")
+nll_null_SubsetFrame=fit_null_SubsetFrame.fun
+print(nll_null_SubsetFrame) #prints negative log likelihood value for null model of Soybean feed 
 #Treatment Model 
 initialGuess_treat=numpy.array([1,1,1])
-fit_treat_Soybean=minimize(nllike_treat,initialGuess_treat,method="Nelder-Mead",options={'disp':True},args=SoybeanFrame) #for first mutation
-print("estimated parameters for treatment model of Soybean feed")
-print(fit_treat_Soybean.x)
-print("negative log likelihood for treatment model of Soybean feed")
-nll_treat_Soybean=fit_treat_Soybean.fun
-print(nll_treat_Soybean) #prints negative log likelihood values
-#Likelihood ratio test for Soybean feed
-D_Soybean=2*(nll_null_Soybean-nll_treat_Soybean)
-print("D value for Soybean likelihood")
-print(D_Soybean)
-p_value_Soybean=1-scipy.stats.chi2.cdf(x=D_Soybean,df=1)
-print("p-value for effect of Soybean feed")
-print(p_value_Soybean)
+fit_treat_SubsetFrame=minimize(nllike_treat,initialGuess_treat,method="Nelder-Mead",options={'disp':True},args=SubsetFrame) #for first mutation
+print("estimated parameters for treatment model")
+print(fit_treat_SubsetFrame.x)
+print("negative log likelihood for treatment model")
+nll_treat_SubsetFrame=fit_treat_SubsetFrame.fun
+print(nll_treat_SubsetFrame) #prints negative log likelihood values
 
-#Minimize nllike to estimate parameters
-#Estimate parameters for Sunflower feed 
-#Null model for Sunflower feed 
-initialGuess_null=numpy.array([1,1])
-fit_null_Sunflower=minimize(nllike_null,initialGuess_null,method="Nelder-Mead",options={'disp':True},args=SunflowerFrame)
-print("estimated parameters for null model of Sunflower feed")
-print(fit_null_Sunflower.x)
-print("negative log likelihood for null model of Sunflower feed")
-nll_null_Sunflower=fit_null_Sunflower.fun
-print(nll_null_Sunflower) #prints negative log likelihood value for null model of sunflower feed 
-#Treatment Model 
-initialGuess_treat=numpy.array([1,1,1])
-fit_treat_Sunflower=minimize(nllike_treat,initialGuess_treat,method="Nelder-Mead",options={'disp':True},args=SunflowerFrame) #GETTING ERROR HERE
-print("estimated parameters for treatment model of Sunflower feed")
-print(fit_treat_Sunflower.x)
-print("negative log likelihood for treatment model of Sunflower feed")
-nll_treat_Sunflower=fit_treat_Sunflower.fun
-print(nll_treat_Sunflower) #prints negative log likelihood values
-#Likelihood ratio test for mutation V456D
-D_Sunflower=2*(nll_null_Sunflower-nll_treat_Sunflower)
-print("D value for Sunflower feed likelihood")
-print(D_Sunflower)
-p_value_Sunflower=1-scipy.stats.chi2.cdf(x=D_Sunflower,df=1)
-print("p-value for effect of Sunflower feed")
-print(p_value_Sunflower)
+#Likelihood ratio test
+D_SubsetFrame=2*(nll_null_SubsetFrame-nll_treat_SubsetFrame)
+print("D value")
+print(D_SubsetFrame)
+p_value_SubsetFrame=1-scipy.stats.chi2.cdf(x=D_SubsetFrame,df=1)
+print("p-value")
+print(p_value_SubsetFrame)
