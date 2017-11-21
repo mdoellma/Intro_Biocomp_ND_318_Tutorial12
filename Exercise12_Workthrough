@@ -1,0 +1,76 @@
+#Helpful code
+#var1 = re.compile(regexstring)
+#list1 = [list of strings to search]
+#filter(var1.match,list1) - re.match finds only the first instance near the beginning of the string
+
+#import packages
+import numpy
+import pandas
+import scipy
+import scipy.integrate as spint
+from scipy.stats import norm
+from scipy.optimize import minimize
+from scipy.stats import chi2
+from plotnine import *
+
+#load data
+chickwts = pandas.read_csv("chickwts.txt",header=0,sep=",")
+
+#Part 2 - generate a plot that summarizes all of the data in 'chickwts.txt'
+ggplot(chickwts,aes(x='feed',y='weight'))+geom_bar(stat="summary",fun_y=numpy.mean)+theme_classic()
+
+#Part 3 - null and alternative hypothesis for difference in chick weight
+#Pull out information interested in
+Subset=chickwts.loc[chickwts.feed.isin(['soybean', 'sunflower']),:]
+
+#Make a dataframe
+#var2=pandas.DataFrame({'y':var1.col2name, 'x':})
+#Designate 'treatment' group as x=1
+#var2.loc[var1.col1name=='name of treatment group', 'x']=1
+SubsetFrame=pandas.DataFrame({'y':Subset.weight,'x':0})
+SubsetFrame.loc[Subset.feed=='sunflower','x']=1
+
+#Null model
+def nllike_null(p_null,obs_null):
+    B0_null=p_null[0]
+    sigma_null=p_null[1]
+    expected_null=B0_null
+    nll_null=-1*norm(expected_null,sigma_null).logpdf(obs_null.y).sum()
+    return nll_null
+    
+#Alternative model (calling it treatment)
+def nllike_treat(p_treat,obs_treat):
+    B0_treat=p_treat[0]
+    B1_treat=p_treat[1]
+    sigma_treat=p_treat[2]
+    expected_treat=B0_treat+B1_treat*obs_treat.x
+    nll_treat=-1*norm(expected_treat,sigma_treat).logpdf(obs_treat.y).sum()
+    return nll_treat
+    
+#Test null hypothesis using likelihood ratio tests
+#Minimize nllike to estimate parameters
+#Estimate parameters for Soybean feed 
+#Null model for Soybean feed
+initialGuess_null=numpy.array([1,1])
+fit_null_SubsetFrame=minimize(nllike_null,initialGuess_null,method="Nelder-Mead",options={'disp':True},args=SubsetFrame)
+print("estimated parameters for null model of Soybean feed")
+print(fit_null_SubsetFrame.x)
+print("negative log likelihood for null model")
+nll_null_SubsetFrame=fit_null_SubsetFrame.fun
+print(nll_null_SubsetFrame) #prints negative log likelihood value for null model
+#Treatment Model 
+initialGuess_treat=numpy.array([1,1,1])
+fit_treat_SubsetFrame=minimize(nllike_treat,initialGuess_treat,method="Nelder-Mead",options={'disp':True},args=SubsetFrame) #for first mutation
+print("estimated parameters for treatment model")
+print(fit_treat_SubsetFrame.x)
+print("negative log likelihood for treatment model")
+nll_treat_SubsetFrame=fit_treat_SubsetFrame.fun
+print(nll_treat_SubsetFrame) #prints negative log likelihood values
+
+#Likelihood ratio test
+D_SubsetFrame=2*(nll_null_SubsetFrame-nll_treat_SubsetFrame)
+print("D value")
+print(D_SubsetFrame)
+p_value_SubsetFrame=1-scipy.stats.chi2.cdf(x=D_SubsetFrame,df=1)
+print("p-value")
+print(p_value_SubsetFrame)
