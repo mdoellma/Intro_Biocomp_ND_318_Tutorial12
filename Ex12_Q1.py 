@@ -15,14 +15,45 @@ summary = ggplot(df,aes(x="feed",y="weight"))
 summary+geom_point()+coord_cartesian()
 
 #states null and alternative hypothesis for difference in weights between soybean and sunflower
-soybean = []
-sunflower = [] 
+sunflower=data.loc[data.feed.isin(['sunflower']),:]
+soybean = data.loc[data.feed.isin(['soybean']),:]
 
-for i in df: 
+temp = [sunflower, soybean]
+likelihood_df = pd.concat(temp)
 
+
+
+likelihood_df.replace(['sunflower','soybean'],[0,1],inplace=True)
 
 
 
 #test null hypothesis with liklihood ratio test 
 
+
+def null(p,obs):
+    B0=p[0]
+    sigma=p[1]
+    expected=B0
+    nll=-1*norm(expected,sigma).logpdf(obs.weight).sum()
+    return nll
+
+#test alternative hypothesis 
+def alt(p,obs):
+    B0=p[0]
+    B1=p[1]
+    sigma=p[2]
+    expected=B0+B1*obs.feed
+    nll=-1*norm(expected,sigma).logpdf(obs.weight).sum()
+    return nll
+
 #interpret the results of the liklihood ratio test 
+
+
+initialVals1=np.array([1,1,1])
+
+fitNull=minimize(null,initialVals1,method="Nelder-Mead",options={'disp':True},args=likelihood_df)
+fitAlt=minimize(alt,initialVals1,method="Nelder-Mead",options={'disp':True},args=likelihood_df)
+
+print (fitNull.x)
+print (fitAlt.x)
+
