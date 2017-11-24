@@ -1,0 +1,28 @@
+#Exercise 12, Question 1
+#Date: November 17, 2017 
+#Author: Janice Love and Melissa Stephens 
+
+import numpy as np 
+import pandas as pd 
+from scipy.optimize import minimize
+from scipy.stats import norm
+from plotnine import *
+
+data = pd.read_csv("chickwts.txt", sep=',')
+df = pd.DataFrame({"x":data.weight,"y":data.feed})
+
+summary = ggplot(df,aes(x="feed",y="weight"))
+summary+geom_point()+coord_cartesian()
+
+#states null and alternative hypothesis for difference in weights between soybean and sunflower
+soybean = []
+sunflower = [] 
+
+for i in df: 
+
+
+
+
+#test null hypothesis with liklihood ratio test 
+
+#interpret the results of the liklihood ratio test 
