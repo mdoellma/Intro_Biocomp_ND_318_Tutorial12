@@ -11,7 +11,7 @@ from plotnine import *
 data = pd.read_csv("chickwts.txt", sep=',')
 df = pd.DataFrame({"x":data.weight,"y":data.feed})
 
-summary = ggplot(df,aes(x="feed",y="weight"))
+summary = ggplot(data,aes(x="feed",y="weight"))
 summary+geom_point()+coord_cartesian()
 
 #states null and alternative hypothesis for difference in weights between soybean and sunflower
@@ -49,11 +49,16 @@ def alt(p,obs):
 #interpret the results of the liklihood ratio test 
 
 
-initialVals1=np.array([1,1,1])
+initialVals=np.array([1,1,1])
 
-fitNull=minimize(null,initialVals1,method="Nelder-Mead",options={'disp':True},args=likelihood_df)
-fitAlt=minimize(alt,initialVals1,method="Nelder-Mead",options={'disp':True},args=likelihood_df)
+fitNull=minimize(null,initialVals,method="Nelder-Mead",options={'disp':True},args=likelihood_df)
+fitAlt=minimize(alt,initialVals,method="Nelder-Mead",options={'disp':True},args=likelihood_df)
 
 print (fitNull.x)
 print (fitAlt.x)
 
+from scipy.stats import chi2
+
+D=(2*(fitNull.fun-fitAlt.fun))
+chi2feed=(1-chi2.cdf(x=D,df=1))
+print(chi2feed)
